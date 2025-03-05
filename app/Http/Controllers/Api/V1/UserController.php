@@ -4,10 +4,28 @@
 
     use App\Http\Controllers\Controller;
     use App\Http\Resources\V1\SettingsResource;
+    use App\Http\Resources\V1\UserResource;
     use Illuminate\Http\Request;
 
     class UserController extends Controller
     {
+        /**
+         * @OA\Get(
+         *     path="/my/profile",
+         *     tags={"My"},
+         *     summary="Get the user profile",
+         *     operationId="getMyProfile",
+         *     @OA\Response(
+         *         response="200",
+         *         description="Profile"
+         *     )
+         * )
+         */
+        public function profile(Request $request): UserResource
+        {
+            return new UserResource($request->user());
+        }
+
         /**
          * @OA\Get(
          *     path="/my/settings",

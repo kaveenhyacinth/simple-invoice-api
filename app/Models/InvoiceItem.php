@@ -11,6 +11,13 @@
         /** @use HasFactory<\Database\Factories\InvoiceItemFactory> */
         use HasFactory;
 
+        protected $fillable = [
+            'name',
+            'quantity',
+            'price',
+            'invoice_id',
+        ];
+
         public function invoice(): BelongsTo
         {
             return $this->belongsTo(Invoice::class);

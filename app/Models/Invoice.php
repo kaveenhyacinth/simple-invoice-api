@@ -13,6 +13,18 @@
         /** @use HasFactory<InvoiceFactory> */
         use HasFactory;
 
+        protected $fillable = [
+            'invoice_number',
+            'invoice_date',
+            'title',
+            'description',
+            'status',
+            'payment_term_id',
+            'address_id',
+            'client_id',
+            'user_id',
+        ];
+
         const STATUSES = [
             'draft',
             'pending',

@@ -76,6 +76,91 @@
                         "description": "The invoices"
                     }
                 }
+            },
+            "post": {
+                "tags": [
+                    "Invoices"
+                ],
+                "summary": "Create a new invoice",
+                "operationId": "createInvoice",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "title",
+                                    "description",
+                                    "invoiceDate",
+                                    "paymentTermId",
+                                    "clientId",
+                                    "addressId",
+                                    "items"
+                                ],
+                                "properties": {
+                                    "title": {
+                                        "type": "string",
+                                        "example": "Invoice #1"
+                                    },
+                                    "description": {
+                                        "type": "string",
+                                        "example": "This is the first invoice"
+                                    },
+                                    "invoiceDate": {
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "2021-10-01"
+                                    },
+                                    "paymentTermId": {
+                                        "type": "integer",
+                                        "example": "1"
+                                    },
+                                    "clientId": {
+                                        "type": "integer",
+                                        "example": "1"
+                                    },
+                                    "addressId": {
+                                        "type": "integer",
+                                        "example": "1"
+                                    },
+                                    "status": {
+                                        "type": "string",
+                                        "example": "draft"
+                                    },
+                                    "items": {
+                                        "type": "array",
+                                        "items": {
+                                            "properties": {
+                                                "name": {
+                                                    "type": "string",
+                                                    "example": "Item #1"
+                                                },
+                                                "quantity": {
+                                                    "type": "integer",
+                                                    "example": "1"
+                                                },
+                                                "price": {
+                                                    "type": "number",
+                                                    "example": "100.00"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Invoice created"
+                    },
+                    "500": {
+                        "description": "Invoice not created"
+                    }
+                }
             }
         },
         "/invoices/{invoiceId}": {
@@ -99,6 +184,20 @@
                 "responses": {
                     "200": {
                         "description": "The invoice"
+                    }
+                }
+            }
+        },
+        "/my/profile": {
+            "get": {
+                "tags": [
+                    "My"
+                ],
+                "summary": "Get the user profile",
+                "operationId": "getMyProfile",
+                "responses": {
+                    "200": {
+                        "description": "Profile"
                     }
                 }
             }

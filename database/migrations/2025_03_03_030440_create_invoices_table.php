@@ -21,7 +21,7 @@
                 $table->date('invoice_date');
                 $table->string('title');
                 $table->mediumText('description');
-                $table->enum('status', Invoice::STATUSES);
+                $table->enum('status', Invoice::STATUSES)->default(Invoice::STATUSES[1]);
                 $table->foreignIdFor(PaymentTerm::class);
                 $table->foreignIdFor(Address::class);
                 $table->foreignIdFor(Client::class);

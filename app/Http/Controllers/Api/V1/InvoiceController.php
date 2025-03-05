@@ -6,10 +6,12 @@
     use App\Http\Resources\V1\InvoiceCollection;
     use App\Http\Resources\V1\InvoiceResource;
     use App\Models\Invoice;
+    use Exception;
     use Gate;
     use Illuminate\Auth\Access\AuthorizationException;
     use Illuminate\Http\JsonResponse;
     use Illuminate\Http\Request;
+    use Random\RandomException;
 
     class InvoiceController extends Controller
     {
@@ -36,11 +38,88 @@
         }
 
         /**
-         * Store a newly created resource in storage.
+         * @OA\Post(
+         *     path="/invoices",
+         *     tags={"Invoices"},
+         *     summary="Create a new invoice",
+         *     operationId="createInvoice",
+         *     @OA\RequestBody(
+         *     required=true,
+         *     @OA\JsonContent(
+         *     required={"title", "description", "invoiceDate", "paymentTermId", "clientId", "addressId", "items"},
+         *     @OA\Property(property="title", type="string", example="Invoice #1"),
+         *     @OA\Property(property="description", type="string", example="This is the first invoice"),
+         *     @OA\Property(property="invoiceDate", type="string", format="date", example="2021-10-01"),
+         *     @OA\Property(property="paymentTermId", type="integer", example="1"),
+         *     @OA\Property(property="clientId", type="integer", example="1"),
+         *     @OA\Property(property="addressId", type="integer", example="1"),
+         *     @OA\Property(property="status", type="string", example="draft"),
+         *     @OA\Property(property="items", type="array", @OA\Items(
+         *     @OA\Property(property="name", type="string", example="Item #1"),
+         *     @OA\Property(property="quantity", type="integer", example="1"),
+         *     @OA\Property(property="price", type="number", example="100.00")
+         *    ))
+         *  )
+         * ),
+         *     @OA\Response(
+         *     response="201",
+         *     description="Invoice created"
+         * ),
+         *     @OA\Response(
+         *     response="500",
+         *     description="Invoice not created"
+         * )
+         * )
          */
         public function store(Request $request)
         {
-            //
+            $request->merge([
+                'client_id' => $request->input('clientId'),
+                'address_id' => $request->input('addressId'),
+                'payment_term_id' => $request->input('paymentTermId'),
+                'invoice_date' => $request->input('invoiceDate'),
+            ]);
+
+            $validated = $request->validate([
+                'title' => 'required|string|max:255',
+                'description' => 'required|string',
+                'invoice_date' => 'required|date',
+                'payment_term_id' => 'required|exists:payment_terms,id',
+                'client_id' => 'required|exists:clients,id',
+                'address_id' => 'required|exists:addresses,id',
+                'status' => 'in:draft,pending,paid,cancelled',
+            ]);
+
+            $validatedItems = $request->validate([
+                'items' => 'required|array',
+                'items.*.name' => 'required|string|max:255',
+                'items.*.quantity' => 'required|integer|min:1',
+                'items.*.price' => 'required|numeric|min:0',
+            ]);
+
+            try {
+                $validated['invoice_number'] = $this->getUniqueInvoiceNumber();
+                $invoice = $request->user()->invoices()->create($validated);
+            } catch (Exception $e) {
+                return response()->json([
+                    'message' => 'Invoice not created'
+                ], 500);
+            }
+
+            try {
+                $invoice->items()->createMany($validatedItems['items']);
+            } catch (Exception $e) {
+                $invoice->delete();
+                return response()->json([
+                    'message' => 'Invoice items not created'
+                ], 500);
+            }
+
+
+            return response()->json([
+                'message' => 'Invoice created',
+                'invoice' => $invoice->id
+            ], 201);
         }
 
         /**
@@ -93,5 +172,17 @@
         public function destroy(Invoice $invoice)
         {
             //
+        }
+
+        /**
+         * @throws RandomException
+         */
+        protected function getUniqueInvoiceNumber(): int
+        {
+            do {
+                $invoiceNumber = random_int(100000, 999999);
+            } while (Invoice::where('invoice_number', $invoiceNumber)->exists());
+
+            return $invoiceNumber;
         }
     }

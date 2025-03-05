@@ -5,12 +5,7 @@
     use App\Http\Controllers\Api\V1\ClientController;
     use App\Http\Controllers\Api\V1\InvoiceController;
     use App\Http\Controllers\Api\V1\UserController;
-    use Illuminate\Http\Request;
     use Illuminate\Support\Facades\Route;
-
-    Route::get('/user', function (Request $request) {
-        return $request->user();
-    })->middleware('auth:sanctum');
 
     Route::prefix('v1')->middleware('auth:sanctum')->group(function () {
         Route::prefix('addresses')->name('addresses.')->group(function () {
@@ -25,9 +20,11 @@
         Route::prefix('invoices')->name('invoices.')->group(function () {
             Route::get('/', [InvoiceController::class, 'index'])->name('index');
             Route::get('/{invoice}', [InvoiceController::class, 'show'])->name('show');
+            Route::post('/', [InvoiceController::class, 'store'])->name('store');
         });
 
         Route::prefix('my')->name('my.')->group(function () {
+            Route::get('profile', [UserController::class, 'profile'])->name('profile');
             Route::get('settings', [UserController::class, 'settings'])->name('settings');
         });
     });
