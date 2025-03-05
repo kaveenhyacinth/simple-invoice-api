@@ -9,10 +9,7 @@
 
     Route::prefix('v1')->middleware('auth:sanctum')->group(function () {
         Route::prefix('invoices')->apiResource('invoices', InvoiceController::class);
-
-        Route::prefix('addresses')->name('addresses.')->group(function () {
-            Route::get('/', [AddressController::class, 'index'])->name('index');
-        });
+        Route::prefix('addresses')->apiResource('addresses', AddressController::class);
 
         Route::prefix('clients')->name('clients.')->group(function () {
             Route::get('/', [ClientController::class, 'index'])->name('index');
