@@ -24,6 +24,98 @@
                     }
                 }
             }
+        },
+        "/clients": {
+            "get": {
+                "tags": [
+                    "Clients"
+                ],
+                "summary": "Get the list of clients (paginated)",
+                "operationId": "getClientList",
+                "responses": {
+                    "200": {
+                        "description": "The clients"
+                    }
+                }
+            }
+        },
+        "/clients/{clientId}": {
+            "get": {
+                "tags": [
+                    "Clients"
+                ],
+                "summary": "Get a client by id",
+                "operationId": "getClient",
+                "parameters": [
+                    {
+                        "name": "clientId",
+                        "in": "path",
+                        "required": true,
+                        "description": "The id of the client",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "The client"
+                    }
+                }
+            }
+        },
+        "/invoices": {
+            "get": {
+                "tags": [
+                    "Invoices"
+                ],
+                "summary": "Get the list of invoices (paginated)",
+                "operationId": "getInvoiceList",
+                "responses": {
+                    "200": {
+                        "description": "The invoices"
+                    }
+                }
+            }
+        },
+        "/invoices/{invoiceId}": {
+            "get": {
+                "tags": [
+                    "Invoices"
+                ],
+                "summary": "Get an invoice by id",
+                "operationId": "getInvoice",
+                "parameters": [
+                    {
+                        "name": "invoiceId",
+                        "in": "path",
+                        "required": true,
+                        "description": "The id of the invoice",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "The invoice"
+                    }
+                }
+            }
+        },
+        "/my/settings": {
+            "get": {
+                "tags": [
+                    "My"
+                ],
+                "summary": "Get the user settings",
+                "operationId": "getMySettings",
+                "responses": {
+                    "200": {
+                        "description": "Settings"
+                    }
+                }
+            }
         }
     },
     "components": {
@@ -40,6 +132,18 @@
         {
             "name": "Addresses",
             "description": "Addresses"
+        },
+        {
+            "name": "Clients",
+            "description": "Clients"
+        },
+        {
+            "name": "Invoices",
+            "description": "Invoices"
+        },
+        {
+            "name": "My",
+            "description": "My"
         }
     ]
 }

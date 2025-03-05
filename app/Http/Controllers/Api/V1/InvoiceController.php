@@ -11,7 +11,16 @@
     class InvoiceController extends Controller
     {
         /**
-         * Display a listing of the resource.
+         * @OA\Get(
+         *     path="/invoices",
+         *     tags={"Invoices"},
+         *     summary="Get the list of invoices (paginated)",
+         *     operationId="getInvoiceList",
+         *     @OA\Response(
+         *         response="200",
+         *         description="The invoices"
+         *     )
+         * )
          */
         public function index(): InvoiceCollection
         {
@@ -29,7 +38,25 @@
         }
 
         /**
-         * Display the specified resource.
+         * @OA\Get(
+         *     path="/invoices/{invoiceId}",
+         *     parameters={
+         *     {
+         *     "name"="invoiceId",
+         *     "in"="path",
+         *     "required"=true,
+         *     "description"="The id of the invoice",
+         *     "schema": {"type"="integer"}
+         *     }
+         *     },
+         *     tags={"Invoices"},
+         *     summary="Get an invoice by id",
+         *     operationId="getInvoice",
+         *     @OA\Response(
+         *         response="200",
+         *         description="The invoice"
+         *     )
+         * )
          */
         public function show(Invoice $invoice): InvoiceResource
         {

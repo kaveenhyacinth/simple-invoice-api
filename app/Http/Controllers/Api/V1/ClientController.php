@@ -11,7 +11,16 @@
     class ClientController extends Controller
     {
         /**
-         * Display a listing of the resource.
+         * @OA\Get(
+         *     path="/clients",
+         *     tags={"Clients"},
+         *     summary="Get the list of clients (paginated)",
+         *     operationId="getClientList",
+         *     @OA\Response(
+         *         response="200",
+         *         description="The clients"
+         *     )
+         * )
          */
         public function index(): ClientCollection
         {
@@ -28,7 +37,25 @@
         }
 
         /**
-         * Display the specified resource.
+         * @OA\Get(
+         *     path="/clients/{clientId}",
+         *     parameters={
+         *     {
+         *     "name"="clientId",
+         *     "in"="path",
+         *     "required"=true,
+         *     "description"="The id of the client",
+         *     "schema": {"type"="integer"}
+         *     }
+         *     },
+         *     tags={"Clients"},
+         *     summary="Get a client by id",
+         *     operationId="getClient",
+         *     @OA\Response(
+         *         response="200",
+         *         description="The client"
+         *     )
+         * )
          */
         public function show(Client $client): ClientResource
         {

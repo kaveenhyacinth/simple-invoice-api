@@ -8,9 +8,21 @@
 
     class UserController extends Controller
     {
+        /**
+         * @OA\Get(
+         *     path="/my/settings",
+         *     tags={"My"},
+         *     summary="Get the user settings",
+         *     operationId="getMySettings",
+         *     @OA\Response(
+         *         response="200",
+         *         description="Settings"
+         *     )
+         * )
+         */
         public function settings(): SettingsResource
         {
-            // TODO: Change once auth implemented
+            //TODO: Change implementation once authentication is implemented
             $settings = Setting::first();
             return new SettingsResource($settings);
         }
