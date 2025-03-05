@@ -4,7 +4,7 @@
 
     use App\Http\Controllers\Controller;
     use App\Http\Resources\V1\SettingsResource;
-    use App\Models\Setting;
+    use Illuminate\Http\Request;
 
     class UserController extends Controller
     {
@@ -20,10 +20,9 @@
          *     )
          * )
          */
-        public function settings(): SettingsResource
+        public function settings(Request $request): SettingsResource
         {
-            //TODO: Change implementation once authentication is implemented
-            $settings = Setting::first();
+            $settings = $request->user()->settings;
             return new SettingsResource($settings);
         }
     }

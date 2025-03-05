@@ -6,6 +6,9 @@
     use App\Http\Resources\V1\InvoiceCollection;
     use App\Http\Resources\V1\InvoiceResource;
     use App\Models\Invoice;
+    use Gate;
+    use Illuminate\Auth\Access\AuthorizationException;
+    use Illuminate\Http\JsonResponse;
     use Illuminate\Http\Request;
 
     class InvoiceController extends Controller
@@ -22,10 +25,13 @@
          *     )
          * )
          */
-        public function index(): InvoiceCollection
+        public function index(Request $request): InvoiceCollection
         {
-            $invoices = Invoice::with(['user', 'client', 'client.address', 'items', 'address', 'paymentTerm']
-            )->paginate(perPage: 10);
+            $invoices = $request->user()
+                ->invoices()
+                ->with(['client', 'client.address', 'items', 'address', 'paymentTerm'])
+                ->paginate(perPage: 10);
+
             return new InvoiceCollection($invoices);
         }
 
@@ -57,9 +63,19 @@
          *         description="The invoice"
          *     )
          * )
+         *
+         * @throws AuthorizationException
          */
-        public function show(Invoice $invoice): InvoiceResource
+        public function show(Invoice $invoice): InvoiceResource|JsonResponse
         {
+            $response = Gate::inspect('modify', $invoice);
+
+            if ($response->denied()) {
+                return response()->json([
+                    'message' => $response->message()
+                ], 403);
+            }
+
             return new InvoiceResource($invoice);
         }
 

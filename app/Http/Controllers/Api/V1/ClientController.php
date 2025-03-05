@@ -6,6 +6,8 @@
     use App\Http\Resources\V1\ClientCollection;
     use App\Http\Resources\V1\ClientResource;
     use App\Models\Client;
+    use Gate;
+    use Illuminate\Auth\Access\AuthorizationException;
     use Illuminate\Http\Request;
 
     class ClientController extends Controller
@@ -22,9 +24,14 @@
          *     )
          * )
          */
-        public function index(): ClientCollection
+        public function index(Request $request): ClientCollection
         {
-            $clients = Client::with(['invoices'])->where('status', '!=', 'deleted')->paginate(10);
+            $clients = $request->user()
+                ->clients()
+                ->with(['invoices'])
+                ->where('status', '!=', 'deleted')
+                ->paginate(10);
+
             return new ClientCollection($clients);
         }
 
@@ -56,9 +63,12 @@
          *         description="The client"
          *     )
          * )
+         *
+         * @throws AuthorizationException
          */
         public function show(Client $client): ClientResource
         {
+            Gate::authorize('modify', $client);
             return new ClientResource($client);
         }
 

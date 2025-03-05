@@ -12,7 +12,7 @@
         return $request->user();
     })->middleware('auth:sanctum');
 
-    Route::prefix('v1')->group(function () {
+    Route::prefix('v1')->middleware('auth:sanctum')->group(function () {
         Route::prefix('addresses')->name('addresses.')->group(function () {
             Route::get('/', [AddressController::class, 'index'])->name('index');
         });

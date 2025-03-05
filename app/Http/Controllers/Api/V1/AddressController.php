@@ -21,9 +21,9 @@
          *     )
          * )
          */
-        public function index(): AddressCollection
+        public function index(Request $request): AddressCollection
         {
-            $addresses = Address::query()
+            $addresses = $request->user()->addresses()
                 ->where('type', '=', 'user')
                 ->paginate(10);
             return new AddressCollection($addresses);
