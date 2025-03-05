@@ -49,6 +49,11 @@
             ];
         }
 
+        public function createSettings()
+        {
+            return $this->settings()->create();
+        }
+
         public function settings(): HasOne
         {
             return $this->hasOne(Setting::class);
