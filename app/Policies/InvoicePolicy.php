@@ -14,4 +14,13 @@
                 ? Response::allow()
                 : Response::deny('You do not own this invoice.');
         }
+
+        public function update(User $user, Invoice $invoice): Response
+        {
+            $this->modify($user, $invoice);
+
+            return !in_array($invoice->status, ['paid', 'cancelled'])
+                ? Response::allow()
+                : Response::deny('You cannot update a paid or cancelled invoice.');
+        }
     }

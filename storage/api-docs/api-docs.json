@@ -186,6 +186,123 @@
                         "description": "The invoice"
                     }
                 }
+            },
+            "put": {
+                "tags": [
+                    "Invoices"
+                ],
+                "summary": "Update an invoice",
+                "operationId": "updateInvoice",
+                "parameters": [
+                    {
+                        "name": "invoiceId",
+                        "in": "path",
+                        "required": true,
+                        "description": "The id of the invoice",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "title",
+                                    "description",
+                                    "invoiceDate",
+                                    "paymentTermId",
+                                    "addressId",
+                                    "items"
+                                ],
+                                "properties": {
+                                    "title": {
+                                        "type": "string",
+                                        "example": "Invoice #1"
+                                    },
+                                    "description": {
+                                        "type": "string",
+                                        "example": "This is the first invoice"
+                                    },
+                                    "invoiceDate": {
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "2021-10-01"
+                                    },
+                                    "paymentTermId": {
+                                        "type": "integer",
+                                        "example": "1"
+                                    },
+                                    "addressId": {
+                                        "type": "integer",
+                                        "example": "1"
+                                    },
+                                    "items": {
+                                        "type": "array",
+                                        "items": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": "(int)1 or null for new items"
+                                                },
+                                                "name": {
+                                                    "type": "string",
+                                                    "example": "Item #1"
+                                                },
+                                                "quantity": {
+                                                    "type": "integer",
+                                                    "example": "1"
+                                                },
+                                                "price": {
+                                                    "type": "number",
+                                                    "example": "100.00"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Invoice updated"
+                    },
+                    "500": {
+                        "description": "Invoice not updated"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Invoices"
+                ],
+                "summary": "Delete an invoice",
+                "operationId": "deleteInvoice",
+                "parameters": [
+                    {
+                        "name": "invoiceId",
+                        "in": "path",
+                        "required": true,
+                        "description": "The id of the invoice",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Invoice deleted"
+                    },
+                    "500": {
+                        "description": "Invoice not deleted"
+                    }
+                }
             }
         },
         "/my/profile": {

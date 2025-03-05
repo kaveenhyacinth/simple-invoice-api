@@ -12,6 +12,7 @@
     use Illuminate\Http\JsonResponse;
     use Illuminate\Http\Request;
     use Random\RandomException;
+    use Throwable;
 
     class InvoiceController extends Controller
     {
@@ -159,19 +160,133 @@
         }
 
         /**
-         * Update the specified resource in storage.
+         * @OA\PUT(
+         *     path="/invoices/{invoiceId}",
+         *     parameters={
+         *     {
+         *     "name"="invoiceId",
+         *     "in"="path",
+         *     "required"=true,
+         *     "description"="The id of the invoice",
+         *     "schema": {"type"="integer"}
+         *     }
+         *     },
+         *     tags={"Invoices"},
+         *     summary="Update an invoice",
+         *     operationId="updateInvoice",
+         *     @OA\RequestBody(
+         *     required=true,
+         *     @OA\JsonContent(
+         *     required={"title", "description", "invoiceDate", "paymentTermId", "addressId", "items"},
+         *     @OA\Property(property="title", type="string", example="Invoice #1"),
+         *     @OA\Property(property="description", type="string", example="This is the first invoice"),
+         *     @OA\Property(property="invoiceDate", type="string", format="date", example="2021-10-01"),
+         *     @OA\Property(property="paymentTermId", type="integer", example="1"),
+         *     @OA\Property(property="addressId", type="integer", example="1"),
+         *     @OA\Property(property="items", type="array", @OA\Items(
+         *     @OA\Property(property="id", type="integer", example="(int)1 or null for new items"),
+         *     @OA\Property(property="name", type="string", example="Item #1"),
+         *     @OA\Property(property="quantity", type="integer", example="1"),
+         *     @OA\Property(property="price", type="number", example="100.00")
+         *   ))
+         * )
+         * ),
+         *     @OA\Response(
+         *     response="200",
+         *     description="Invoice updated"
+         * ),
+         *     @OA\Response(
+         *     response="500",
+         *     description="Invoice not updated"
+         * )
+         * )
+         * )
+         *
+         * @throws AuthorizationException
          */
         public function update(Request $request, Invoice $invoice)
         {
-            //
+            Gate::authorize('update', $invoice);
+
+            $request->merge([
+                'address_id' => $request->input('addressId'),
+                'payment_term_id' => $request->input('paymentTermId'),
+                'invoice_date' => $request->input('invoiceDate'),
+            ]);
+
+            $validated = $request->validate([
+                'title' => 'required|string|max:255',
+                'description' => 'required|string',
+                'invoice_date' => 'required|date',
+                'payment_term_id' => 'required|exists:payment_terms,id',
+                'address_id' => 'required|exists:addresses,id',
+            ]);
+
+            $validatedItems = $request->validate([
+                'items' => 'required|array',
+                'items.*.id' => 'integer|nullable',
+                'items.*.name' => 'required|string|max:255',
+                'items.*.quantity' => 'required|integer|min:1',
+                'items.*.price' => 'required|numeric|min:0',
+            ]);
+
+            try {
+                $invoice->update($validated);
+            } catch (Exception $e) {
+                return response()->json([
+                    'message' => 'Invoice not updated'
+                ], 500);
+            }
+
+            try {
+                foreach ($validatedItems['items'] as $item) {
+                    $invoice->items()->updateOrCreate(['id' => $item['id']], $item);
+                }
+            } catch (Exception $e) {
+                return response()->json([
+                    'message' => 'Invoice items not updated'
+                ], 500);
+            }
+
+            return new InvoiceResource($invoice);
         }
 
         /**
-         * Remove the specified resource from storage.
+         * @OA\DELETE(
+         *     path="/invoices/{invoiceId}",
+         *     parameters={
+         *     {
+         *     "name"="invoiceId",
+         *     "in"="path",
+         *     "required"=true,
+         *     "description"="The id of the invoice",
+         *     "schema": {"type"="integer"}
+         *     }
+         *     },
+         *     tags={"Invoices"},
+         *     summary="Delete an invoice",
+         *     operationId="deleteInvoice",
+         *     @OA\Response(
+         *     response="200",
+         *     description="Invoice deleted"
+         * ),
+         *     @OA\Response(
+         *     response="500",
+         *     description="Invoice not deleted"
+         * )
+         * )
+         * )
+         * @throws Throwable
          */
         public function destroy(Invoice $invoice)
         {
-            //
+            Gate::authorize('modify', $invoice);
+
+            $invoice->deleteOrFail();
+
+            return response()->json([
+                'message' => 'Invoice deleted'
+            ]);
         }
 
         /**

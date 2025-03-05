@@ -8,6 +8,8 @@
     use Illuminate\Support\Facades\Route;
 
     Route::prefix('v1')->middleware('auth:sanctum')->group(function () {
+        Route::prefix('invoices')->apiResource('invoices', InvoiceController::class);
+
         Route::prefix('addresses')->name('addresses.')->group(function () {
             Route::get('/', [AddressController::class, 'index'])->name('index');
         });
@@ -15,12 +17,6 @@
         Route::prefix('clients')->name('clients.')->group(function () {
             Route::get('/', [ClientController::class, 'index'])->name('index');
             Route::get('/{client}', [ClientController::class, 'show'])->name('show');
-        });
-
-        Route::prefix('invoices')->name('invoices.')->group(function () {
-            Route::get('/', [InvoiceController::class, 'index'])->name('index');
-            Route::get('/{invoice}', [InvoiceController::class, 'show'])->name('show');
-            Route::post('/', [InvoiceController::class, 'store'])->name('store');
         });
 
         Route::prefix('my')->name('my.')->group(function () {

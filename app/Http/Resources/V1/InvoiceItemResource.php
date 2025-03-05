@@ -17,7 +17,7 @@
             return [
                 'id' => $this->id,
                 'invoiceId' => $this->invoice_id,
-                'description' => $this->description,
+                'name' => $this->name,
                 'quantity' => $this->quantity,
                 'price' => $this->price,
                 'total' => $this->getTotal($this),
