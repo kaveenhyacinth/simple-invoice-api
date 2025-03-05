@@ -14,6 +14,7 @@
             Schema::create('settings', function (Blueprint $table) {
                 $table->id();
                 $table->string('invoice_prefix', 3)->default('INV');
+                $table->string('currency_code', 3)->default('USD');
                 $table->foreignIdFor(User::class)->constrained()->cascadeOnDelete();
                 $table->timestamps();
             });

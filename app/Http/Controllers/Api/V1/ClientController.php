@@ -3,21 +3,20 @@
     namespace App\Http\Controllers\Api\V1;
 
     use App\Http\Controllers\Controller;
-    use App\Http\Resources\V1\InvoiceCollection;
-    use App\Http\Resources\V1\InvoiceResource;
-    use App\Models\Invoice;
+    use App\Http\Resources\V1\ClientCollection;
+    use App\Http\Resources\V1\ClientResource;
+    use App\Models\Client;
     use Illuminate\Http\Request;
 
-    class InvoiceController extends Controller
+    class ClientController extends Controller
     {
         /**
          * Display a listing of the resource.
          */
-        public function index(): InvoiceCollection
+        public function index(): ClientCollection
         {
-            $invoices = Invoice::with(['user', 'client', 'client.address', 'items', 'address', 'paymentTerm']
-            )->paginate(perPage: 10);
-            return new InvoiceCollection($invoices);
+            $clients = Client::with(['invoices'])->where('status', '!=', 'deleted')->paginate(10);
+            return new ClientCollection($clients);
         }
 
         /**
@@ -31,15 +30,15 @@
         /**
          * Display the specified resource.
          */
-        public function show(Invoice $invoice): InvoiceResource
+        public function show(Client $client): ClientResource
         {
-            return new InvoiceResource($invoice);
+            return new ClientResource($client);
         }
 
         /**
          * Update the specified resource in storage.
          */
-        public function update(Request $request, Invoice $invoice)
+        public function update(Request $request, Client $client)
         {
             //
         }
@@ -47,7 +46,7 @@
         /**
          * Remove the specified resource from storage.
          */
-        public function destroy(Invoice $invoice)
+        public function destroy(Client $client)
         {
             //
         }
