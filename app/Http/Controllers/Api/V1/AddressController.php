@@ -10,7 +10,16 @@
     class AddressController extends Controller
     {
         /**
-         * Display a listing of the resource.
+         * @OA\Get(
+         *     path="/addresses",
+         *     tags={"Addresses"},
+         *     summary="Get the list of addresses",
+         *     operationId="getAddressList",
+         *     @OA\Response(
+         *         response="200",
+         *         description="The addresses"
+         *     )
+         * )
          */
         public function index(): AddressCollection
         {
