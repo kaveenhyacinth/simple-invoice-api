@@ -2,6 +2,7 @@
 
     namespace App\Http\Controllers\Api\V1;
 
+    use App\Events\UserCreated;
     use App\Http\Controllers\Controller;
     use App\Models\User;
     use Illuminate\Http\JsonResponse;
@@ -32,6 +33,8 @@
 
             $user->createSettings();
             $token = $user->createToken($validated['email'])->plainTextToken;
+
+            UserCreated::dispatch($user);
 
             return response()->json([
                 'data' => [
